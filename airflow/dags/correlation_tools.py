@@ -220,8 +220,8 @@ def build_metrics(cfg: Config, dq_peaks: pd.DataFrame, matches: pd.DataFrame, to
         tool_long = all_tools_df[all_tools_df["tool"] == tool.lower().replace(" ", "_")]
         tool_series = tool_long.set_index("date")["value"].sort_index()
         cc = compute_cross_correlation(cfg, dq_series_full.sort_index(), tool_series)
-        subset_matches = matches[matches["tool"] == tool.lower().replace(" ", "_")]
-        matched_dq_peaks = len(set(subset_matches["dq_peak_date"]))
+        subset_matches = matches[matches["tool"] == tool.lower().replace(" ", "_")] if not matches.empty else pd.DataFrame()
+        matched_dq_peaks = len(set(subset_matches["dq_peak_date"])) if not subset_matches.empty else 0
         match_rate = matched_dq_peaks / total_dq_peaks if total_dq_peaks else 0
         mean_score = subset_matches["score"].mean() if (cfg.compute_score and not subset_matches.empty) else 0
         median_lag = subset_matches["delta_days"].median() if not subset_matches.empty else None

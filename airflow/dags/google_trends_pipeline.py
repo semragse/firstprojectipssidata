@@ -19,11 +19,11 @@ from airflow.stats import Stats
 from monitoring.alerts import task_failure_callback, task_success_callback
 
 KEYWORDS = [
-    "Airflow",
-    "Databricks",
-    "Collibra",
-    "Data engineering",
-    "Data quality",
+    "ChatGPT",
+    "AI",
+    "Machine Learning",
+    "Python",
+    "Data Science",
 ]
 
 DEFAULT_ARGS = {

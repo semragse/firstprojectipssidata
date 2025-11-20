@@ -22,10 +22,10 @@ def load_csv(name: str) -> pd.DataFrame:
 def root():
     return {"service": "dashboard-api", "time": datetime.utcnow().isoformat()}
 
-@app.get("/airflow/evolution")
-def airflow_evolution():
+@app.get("/chatgpt/evolution")
+def chatgpt_evolution():
     try:
-        df = load_csv("airflow_evolution_series.csv")
+        df = load_csv("chatgpt_evolution_series.csv")
         return [
             {
                 "date": r.date,
@@ -34,12 +34,12 @@ def airflow_evolution():
             } for r in df.itertuples()
         ]
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="airflow evolution not found")
+        raise HTTPException(status_code=404, detail="chatgpt evolution not found")
 
-@app.get("/databricks/peaks")
-def databricks_peaks():
+@app.get("/ai/peaks")
+def ai_peaks():
     try:
-        df = load_csv("databricks_peaks.csv")
+        df = load_csv("ai_peaks.csv")
         if df.empty:
             return []
         return [
@@ -50,22 +50,22 @@ def databricks_peaks():
             } for r in df.itertuples()
         ]
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="databricks peaks not found")
+        raise HTTPException(status_code=404, detail="ai peaks not found")
 
-@app.get("/collibra/map")
-def collibra_map():
+@app.get("/python/map")
+def python_map():
     try:
-        df = load_csv("collibra_top_countries.csv")
+        df = load_csv("python_top_countries.csv")
         return [
             {"region": r.region, "value": r.value} for r in df.itertuples()
         ]
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="collibra map not found")
+        raise HTTPException(status_code=404, detail="python map not found")
 
-@app.get("/data-engineering/fr-vs-us")
-def data_engineering_fr_us():
+@app.get("/machine-learning/fr-vs-us")
+def machine_learning_fr_us():
     try:
-        df = load_csv("data_engineering_fr_us.csv")
+        df = load_csv("machine_learning_fr_us.csv")
         return [
             {
                 "date": r.date,
@@ -75,34 +75,29 @@ def data_engineering_fr_us():
             } for r in df.itertuples()
         ]
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="fr vs us not found")
+        raise HTTPException(status_code=404, detail="machine learning fr vs us not found")
 
-@app.get("/data-quality/events-correlation")
-def data_quality_events():
+@app.get("/data-science/events-correlation")
+def data_science_events():
     path = ANALYTICS_DIR / "data_quality_event_correlation.json"
     if not path.exists():
         raise HTTPException(status_code=404, detail="event correlation not found")
     return json.loads(path.read_text())
 
-@app.get("/databricks/forecast")
-def databricks_forecast():
+@app.get("/ai/forecast")
+def ai_forecast():
     try:
-        df = load_latest_databricks_series()
-        fc = sarimax_forecast(df)
-        return {
-            "generated_at": datetime.utcnow().isoformat(),
-            "horizon_days": FORECAST_HORIZON,
-            "points": [
-                {
-                    "date": r.date.strftime('%Y-%m-%d'),
-                    "forecast": r.forecast,
-                    "lower80": r.lower80,
-                    "upper80": r.upper80
-                } for r in fc.itertuples()
-            ]
-        }
+        df = load_csv("ai_forecast.csv")
+        return [
+            {
+                "date": r.date,
+                "forecast": r.forecast,
+                "lower80": r.lower80,
+                "upper80": r.upper80
+            } for r in df.itertuples()
+        ]
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="databricks raw series not found")
+        raise HTTPException(status_code=404, detail="ai forecast not found")
 
 @app.get("/health")
 def health():

@@ -1,11 +1,11 @@
 """Transformations analytics Google Trends (12 derniers mois)
 
 Génère des fichiers dans data/processed/analytics/:
-- airflow_evolution.csv : évolution et stats Airflow
-- databricks_peaks.csv : pics d'intérêt pour Databricks
-- collibra_top_countries.csv : top pays pour Collibra
-- data_engineering_fr_us.csv : comparaison FR vs US pour 'Data engineering'
-- data_quality_peaks.csv : détection de pics pour 'Data quality'
+- chatgpt_evolution.csv : évolution et stats ChatGPT
+- ai_peaks.csv : pics d'intérêt pour AI
+- python_top_countries.csv : top pays pour Python
+- machine_learning_fr_us.csv : comparaison FR vs US pour 'Machine Learning'
+- data_science_peaks.csv : détection de pics pour 'Data Science'
 
 Utilise pytrends avec verify=False (SSL intercept). Ajouter --secure pour activer la vérification.
 """
@@ -55,7 +55,7 @@ def fetch_region(client: TrendReq, keyword: str, resolution: str = "COUNTRY") ->
 
 # --------------------- Analytics --------------------- #
 
-def airflow_evolution(df: pd.DataFrame) -> pd.DataFrame:
+def airflow_evolution(df: pd.DataFrame, keyword: str = "airflow") -> pd.DataFrame:
     df_sorted = df.sort_values("date")
     first_val = df_sorted.iloc[0]["value"]
     last_val = df_sorted.iloc[-1]["value"]
@@ -73,9 +73,9 @@ def airflow_evolution(df: pd.DataFrame) -> pd.DataFrame:
             "n_points": len(df_sorted),
         }
     ])
-    out_stats = OUTPUT_DIR / "airflow_evolution.csv"
+    out_stats = OUTPUT_DIR / f"{keyword}_evolution.csv"
     summary.to_csv(out_stats, index=False)
-    out_series = OUTPUT_DIR / "airflow_evolution_series.csv"
+    out_series = OUTPUT_DIR / f"{keyword}_evolution_series.csv"
     pd.merge(df_sorted, rolling_4w, on="date", how="left").to_csv(out_series, index=False)
     return summary
 
@@ -88,31 +88,31 @@ def detect_peaks(df: pd.DataFrame, window: int = 4, z_threshold: float = 1.5) ->
     peaks["z_score"] = z_scores[peaks.index].values
     return peaks
 
-def databricks_peaks(df: pd.DataFrame) -> pd.DataFrame:
+def databricks_peaks(df: pd.DataFrame, keyword: str = "databricks") -> pd.DataFrame:
     peaks = detect_peaks(df, window=4, z_threshold=1.5)
     top = peaks.sort_values("peak_value", ascending=False).head(10)
-    out_file = OUTPUT_DIR / "databricks_peaks.csv"
+    out_file = OUTPUT_DIR / f"{keyword}_peaks.csv"
     top.to_csv(out_file, index=False)
     return top
 
-def collibra_top_countries(df_region: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
+def collibra_top_countries(df_region: pd.DataFrame, keyword: str = "collibra", top_n: int = 10) -> pd.DataFrame:
     top = df_region.head(top_n)
-    out_file = OUTPUT_DIR / "collibra_top_countries.csv"
+    out_file = OUTPUT_DIR / f"{keyword}_top_countries.csv"
     top.to_csv(out_file, index=False)
     return top
 
-def data_engineering_fr_vs_us(fr_df: pd.DataFrame, us_df: pd.DataFrame) -> pd.DataFrame:
+def data_engineering_fr_vs_us(fr_df: pd.DataFrame, us_df: pd.DataFrame, keyword: str = "data_engineering") -> pd.DataFrame:
     fr_df = fr_df.rename(columns={"value": "fr_value"})
     us_df = us_df.rename(columns={"value": "us_value"})
     merged = pd.merge(fr_df, us_df, on="date", how="inner")
     merged["diff"] = merged["fr_value"] - merged["us_value"]
-    out_file = OUTPUT_DIR / "data_engineering_fr_us.csv"
+    out_file = OUTPUT_DIR / f"{keyword}_fr_us.csv"
     merged.to_csv(out_file, index=False)
     return merged
 
-def data_quality_peaks(df: pd.DataFrame) -> pd.DataFrame:
+def data_quality_peaks(df: pd.DataFrame, keyword: str = "data_quality") -> pd.DataFrame:
     peaks = detect_peaks(df, window=4, z_threshold=1.5)
-    out_file = OUTPUT_DIR / "data_quality_peaks.csv"
+    out_file = OUTPUT_DIR / f"{keyword}_peaks.csv"
     peaks.to_csv(out_file, index=False)
     return peaks
 
@@ -120,34 +120,34 @@ def data_quality_peaks(df: pd.DataFrame) -> pd.DataFrame:
 
 def run_all(cfg: FetchConfig) -> None:
     client = make_client(cfg)
-    # Airflow evolution
-    airflow_df = fetch_time_series(client, "Airflow")
-    airflow_stats = airflow_evolution(airflow_df)
+    # ChatGPT evolution
+    chatgpt_df = fetch_time_series(client, "ChatGPT")
+    chatgpt_stats = airflow_evolution(chatgpt_df, "chatgpt")
 
-    # Databricks peaks
-    databricks_df = fetch_time_series(client, "Databricks")
-    databricks_peak_df = databricks_peaks(databricks_df)
+    # AI peaks
+    ai_df = fetch_time_series(client, "AI")
+    ai_peak_df = databricks_peaks(ai_df, "ai")
 
-    # Collibra top countries
-    collibra_region_df = fetch_region(client, "Collibra")
-    collibra_top = collibra_top_countries(collibra_region_df)
+    # Python top countries
+    python_region_df = fetch_region(client, "Python")
+    python_top = collibra_top_countries(python_region_df, "python")
 
-    # Data engineering FR vs US
-    fr_df = fetch_time_series(client, "Data engineering", geo="FR")
-    us_df = fetch_time_series(client, "Data engineering", geo="US")
-    fr_us_df = data_engineering_fr_vs_us(fr_df, us_df)
+    # Machine Learning FR vs US
+    fr_df = fetch_time_series(client, "Machine Learning", geo="FR")
+    us_df = fetch_time_series(client, "Machine Learning", geo="US")
+    ml_fr_us_df = data_engineering_fr_vs_us(fr_df, us_df, "machine_learning")
 
-    # Data quality peaks
-    data_quality_df = fetch_time_series(client, "Data quality")
-    dq_peaks_df = data_quality_peaks(data_quality_df)
+    # Data Science peaks
+    data_science_df = fetch_time_series(client, "Data Science")
+    ds_peaks_df = data_quality_peaks(data_science_df, "data_science")
 
     print("[DONE] Transformations terminées")
     for name, df in [
-        ("airflow_evolution", airflow_stats),
-        ("databricks_peaks", databricks_peak_df),
-        ("collibra_top_countries", collibra_top),
-        ("data_engineering_fr_us", fr_us_df.head()),
-        ("data_quality_peaks", dq_peaks_df.head()),
+        ("chatgpt_evolution", chatgpt_stats),
+        ("ai_peaks", ai_peak_df),
+        ("python_top_countries", python_top),
+        ("machine_learning_fr_us", ml_fr_us_df.head()),
+        ("data_science_peaks", ds_peaks_df.head()),
     ]:
         print(f"--- {name} ---")
         print(df.head())

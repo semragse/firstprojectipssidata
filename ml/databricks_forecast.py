@@ -8,21 +8,24 @@ except Exception:
     SARIMAX = None
 
 DATA_RAW_DIR = Path("data/raw")
-OUTPUT_PATH = Path("data/processed/analytics/databricks_forecast.csv")
+OUTPUT_PATH = Path("data/processed/analytics/ai_forecast.csv")
 
 FORECAST_HORIZON = 30  # days
 
 
-def load_latest_databricks_series() -> pd.DataFrame:
-    files = sorted(DATA_RAW_DIR.glob("google_trends_databricks_daily_*.csv"))
+def load_latest_databricks_series(keyword: str = "AI") -> pd.DataFrame:
+    # Load from the main trends file
+    files = sorted(DATA_RAW_DIR.glob("google_trends_daily_*.csv"))
     if not files:
-        raise FileNotFoundError("No Databricks daily raw file found")
+        raise FileNotFoundError("No daily raw file found")
     latest = files[-1]
     df = pd.read_csv(latest)
-    # Expect columns: date, Databricks
+    # Expect columns: date, keyword
+    if keyword not in df.columns:
+        raise ValueError(f"Keyword '{keyword}' not found in {latest}")
     df['date'] = pd.to_datetime(df['date'])
     df = df.sort_values('date')
-    return df[['date', 'Databricks']].rename(columns={'Databricks': 'value'})
+    return df[['date', keyword]].rename(columns={keyword: 'value'})
 
 
 def naive_forecast(df: pd.DataFrame) -> pd.DataFrame:
