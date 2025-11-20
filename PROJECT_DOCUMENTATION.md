@@ -324,8 +324,8 @@ curl http://localhost:8000/chatgpt/evolution
 
 ```bash
 # 1. Cloner le repo
-git clone https://github.com/semragse/Correlation-DQ-outilsdeDQ.git
-cd Correlation-DQ-outilsdeDQ
+git clone 
+cd 
 
 # 2. Créer un environnement virtuel
 python -m venv .venv

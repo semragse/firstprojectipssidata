@@ -2,31 +2,73 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 from typing import List
+import time
 
 import pandas as pd
 from pytrends.request import TrendReq
+from pytrends import exceptions as pytrends_exc
 import os
 
 KEYWORDS = [
-    "Airflow",
-    "Databricks",
-    "Collibra",
-    "Data engineering",
-    "Data quality",
+    "ChatGPT",
+    "AI",
+    "Machine Learning",
+    "Python",
+    "Data Science",
 ]
 
-def fetch_trends(keywords: List[str], timeframe: str = "today 12-m", verify: bool | str = True) -> pd.DataFrame:
-    # verify peut être True/False ou chemin vers bundle CA
+def fetch_trends(keywords: List[str], timeframe: str = "today 12-m", verify: bool | str = True, max_retries: int = 5, base_sleep: float = 2.0) -> pd.DataFrame:
+    """Récupère les séries Google Trends mot-clé par mot-clé avec logique de retry pour limiter les erreurs 429.
+
+    Stratégie:
+      - Requêtes individuelles pour chaque mot-clé pour réduire la charge.
+      - Retry exponentiel sur TooManyRequestsError ou erreurs réseau transitoires.
+      - Fusion sur l'index date final.
+    """
     requests_args = {"verify": verify}
     pytrends = TrendReq(hl="en-US", tz=360, requests_args=requests_args)
-    pytrends.build_payload(keywords, timeframe=timeframe)
-    df = pytrends.interest_over_time()
-    if df.empty:
-        raise ValueError("Aucune donnée retournée par Google Trends.")
-    if "isPartial" in df.columns:
-        df = df.drop(columns=["isPartial"])
-    df.index.name = "date"
-    return df
+    all_frames: List[pd.DataFrame] = []
+    for kw in keywords:
+        attempt = 0
+        while True:
+            try:
+                pytrends.build_payload([kw], timeframe=timeframe)
+                df_kw = pytrends.interest_over_time()
+                if df_kw.empty:
+                    print(f"[WARN] Données vides pour '{kw}' – colonne ignorée.")
+                    break
+                if "isPartial" in df_kw.columns:
+                    df_kw = df_kw.drop(columns=["isPartial"])
+                df_kw.index.name = "date"
+                # Conserver seulement la série du mot-clé
+                series = df_kw[kw].rename(kw).to_frame()
+                all_frames.append(series)
+                print(f"[OK] '{kw}' récupéré ({len(series)} points)")
+                # Petite pause entre requêtes pour éviter 429
+                time.sleep(1.0)
+                break
+            except pytrends_exc.TooManyRequestsError:
+                attempt += 1
+                if attempt >= max_retries:
+                    print(f"[ERROR] Abandon '{kw}' après {attempt} tentatives (429).")
+                    break
+                sleep_time = base_sleep * (2 ** (attempt - 1))
+                print(f"[RETRY] 429 sur '{kw}' – attente {sleep_time:.1f}s (tentative {attempt}/{max_retries})")
+                time.sleep(sleep_time)
+            except Exception as e:
+                attempt += 1
+                if attempt >= max_retries:
+                    print(f"[ERROR] Abandon '{kw}' après {attempt} tentatives: {e}")
+                    break
+                sleep_time = base_sleep * (2 ** (attempt - 1))
+                print(f"[RETRY] Erreur '{kw}': {e} – attente {sleep_time:.1f}s (tentative {attempt}/{max_retries})")
+                time.sleep(sleep_time)
+    if not all_frames:
+        raise ValueError("Aucune donnée retournée pour les mots-clés fournis.")
+    # Fusion sur l'index (outer pour inclure toutes les dates).
+    merged = pd.concat(all_frames, axis=1)
+    merged.index.name = "date"
+    return merged
 
 def transform_granularity(df: pd.DataFrame, granularity: str) -> pd.DataFrame:
     if granularity == "daily":

@@ -1,80 +1,22 @@
 {
-  "generated_at": "2025-11-20T12:48:49.145208",
-  "parameters": {
-    "tools": [
-      "Collibra",
-      "Talend",
-      "Informatica",
-      "Datafold",
-      "Soda",
-      "Bigeye"
-    ],
-    "window_days": 7,
-    "z_threshold": 1.5,
-    "rolling_window": 4,
-    "compute_score": false,
-    "max_lag": 30
+  "collibra": {
+    "max_corr": 0.928,
+    "lag_at_max_corr": 0
   },
-  "metrics": {
-    "total_dq_peaks": 0,
-    "tools": {
-      "collibra": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.928,
-        "lag_at_max_corr": 0
-      },
-      "talend": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.285,
-        "lag_at_max_corr": -30
-      },
-      "informatica": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.7089,
-        "lag_at_max_corr": -30
-      },
-      "datafold": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.6917,
-        "lag_at_max_corr": 0
-      },
-      "soda": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.872,
-        "lag_at_max_corr": -4
-      },
-      "bigeye": {
-        "matched_dq_peaks": 0,
-        "match_rate": 0,
-        "mean_score": 0,
-        "median_lag": null,
-        "lead_ratio": 0,
-        "max_corr": 0.062,
-        "lag_at_max_corr": -30
-      }
-    },
-    "skipped_tools": []
+  "soda": {
+    "max_corr": 0.872,
+    "lag_at_max_corr": -4
   },
-  "top_matches": [],
-  "sample_matches": []
+  "informatica": {
+    "max_corr": 0.709,
+    "lag_at_max_corr": -30
+  },
+  "talend": {
+    "max_corr": 0.654,
+    "lag_at_max_corr": 2
+  },
+  "great_expectations": {
+    "max_corr": 0.598,
+    "lag_at_max_corr": 1
+  }
 }
