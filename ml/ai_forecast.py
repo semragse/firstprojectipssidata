@@ -13,7 +13,7 @@ OUTPUT_PATH = Path("data/processed/analytics/ai_forecast.csv")
 FORECAST_HORIZON = 30  # days
 
 
-def load_latest_databricks_series(keyword: str = "AI") -> pd.DataFrame:
+def load_latest_ai_series(keyword: str = "AI") -> pd.DataFrame:
     # Load from the main trends file
     files = sorted(DATA_RAW_DIR.glob("google_trends_daily_*.csv"))
     if not files:
@@ -72,14 +72,14 @@ def sarimax_forecast(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_and_save_forecast() -> str:
-    df = load_latest_databricks_series()
+    df = load_latest_ai_series()
     fc = sarimax_forecast(df)
     fc.to_csv(OUTPUT_PATH, index=False)
     return str(OUTPUT_PATH)
 
 
 def as_json() -> str:
-    df = load_latest_databricks_series()
+    df = load_latest_ai_series()
     fc = sarimax_forecast(df)
     return json.dumps({
         'generated_at': datetime.utcnow().isoformat(),

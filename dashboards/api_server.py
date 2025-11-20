@@ -5,7 +5,7 @@ import pandas as pd
 import json
 from datetime import datetime
 
-from ml.databricks_forecast import sarimax_forecast, load_latest_databricks_series, FORECAST_HORIZON
+from ml.ai_forecast import sarimax_forecast, load_latest_ai_series, FORECAST_HORIZON
 
 app = FastAPI(title="DataLakeVendredi Dashboard API")
 ANALYTICS_DIR = Path("data/processed/analytics")
