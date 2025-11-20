@@ -1,0 +1,77 @@
+version: "3.8"
+
+x-airflow-env: &airflow-env
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__FERNET_KEY: "${AIRFLOW_FERNET_KEY:-}"
+  AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+  AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+
+  airflow-init:
+    image: apache/airflow:2.8.4
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      airflow db upgrade && \
+      airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin || true
+    environment: *airflow-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./airflow:/opt/airflow
+
+  airflow-webserver:
+    image: apache/airflow:2.8.4
+    ports:
+      - "8080:8080"
+    environment: *airflow-env
+    command: webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./airflow:/opt/airflow
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.4
+    environment: *airflow-env
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./airflow:/opt/airflow
+    dashboard-api:
+      image: python:3.13-slim
+      working_dir: /app
+      volumes:
+        - ./:/app
+      command: bash -c "pip install -r requirements.txt && uvicorn dashboards.api_server:app --host 0.0.0.0 --port 8000"
+      ports:
+        - "8000:8000"
+      depends_on:
+        - postgres
+    grafana:
+      image: grafana/grafana:latest
+      ports:
+        - "3000:3000"
+      environment:
+        - GF_INSTALL_PLUGINS=marcusolsson-json-datasource
+      depends_on:
+        - dashboard-api
+
+volumes: {}

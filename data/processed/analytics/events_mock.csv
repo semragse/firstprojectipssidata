@@ -1,0 +1,8 @@
+event_date,event_name,event_type,importance,description
+2024-12-05,Quality Summit Europe,conference,4,Annual data quality conference
+2025-01-15,Product Release v2,release,3,Major feature release data validation
+2025-03-10,Marketing Campaign Q1,marketing,2,Campaign focusing on data trust
+2025-05-05,Incident Data Pipeline,incident,5,Major pipeline disruption raising quality concerns
+2025-07-18,Quality Webinar Series,conference,2,Webinar on data profiling
+2025-09-01,Regulation Update,compliance,4,New compliance rules about data lineage
+2025-10-12,Tool Integration Launch,release,3,Integration with monitoring tool

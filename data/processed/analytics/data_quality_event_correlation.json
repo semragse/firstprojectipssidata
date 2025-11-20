@@ -1,0 +1,13 @@
+{
+  "generated_at": "2025-11-20T09:20:12.696456",
+  "metrics": {
+    "total_peaks": 8,
+    "matched_peaks": 0,
+    "match_rate": 0.0,
+    "events_per_matched_peak": 0,
+    "distribution_lead_lag": {},
+    "top_event_types": {},
+    "mean_importance": 0
+  },
+  "sample_matches": []
+}
