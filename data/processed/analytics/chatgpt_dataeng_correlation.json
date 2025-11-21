@@ -1,0 +1,114 @@
+{
+  "analysis_date": "2025-11-21T11:39:43.121634",
+  "keywords": {
+    "keyword1": "ChatGPT",
+    "keyword2": "Data Science"
+  },
+  "data_points": {
+    "chatgpt": 53,
+    "data_science": 53,
+    "common": 53
+  },
+  "correlation": {
+    "basic": 0.326236635213629,
+    "best": 0.44154729475815163,
+    "optimal_lag_weeks": 4,
+    "p_value": 0.017123994635825025,
+    "significant": true
+  },
+  "growth_rates": {
+    "chatgpt_percent": 86.53846153846155,
+    "data_science_percent": 3.8461538461538463
+  },
+  "interpretation": {
+    "strength": "modérée",
+    "direction": "positive",
+    "lag_interpretation": "Data Science mène de 4 semaines"
+  },
+  "all_lags": [
+    {
+      "lag": -10,
+      "correlation": 0.30041413096545405
+    },
+    {
+      "lag": -9,
+      "correlation": 0.283430832042353
+    },
+    {
+      "lag": -8,
+      "correlation": 0.2340666701842147
+    },
+    {
+      "lag": -7,
+      "correlation": 0.2589196561660331
+    },
+    {
+      "lag": -6,
+      "correlation": 0.27882519689127216
+    },
+    {
+      "lag": -5,
+      "correlation": 0.36858840102461404
+    },
+    {
+      "lag": -4,
+      "correlation": 0.3047367691786259
+    },
+    {
+      "lag": -3,
+      "correlation": 0.257585853323246
+    },
+    {
+      "lag": -2,
+      "correlation": 0.34850732547552343
+    },
+    {
+      "lag": -1,
+      "correlation": 0.3479049117946252
+    },
+    {
+      "lag": 0,
+      "correlation": 0.326236635213629
+    },
+    {
+      "lag": 1,
+      "correlation": 0.3115788958792943
+    },
+    {
+      "lag": 2,
+      "correlation": 0.3298027353191786
+    },
+    {
+      "lag": 3,
+      "correlation": 0.4372559433257643
+    },
+    {
+      "lag": 4,
+      "correlation": 0.44154729475815163
+    },
+    {
+      "lag": 5,
+      "correlation": 0.4122625771580291
+    },
+    {
+      "lag": 6,
+      "correlation": 0.40302518761689377
+    },
+    {
+      "lag": 7,
+      "correlation": 0.42334736699257475
+    },
+    {
+      "lag": 8,
+      "correlation": 0.3893432156497017
+    },
+    {
+      "lag": 9,
+      "correlation": 0.3957296030620752
+    },
+    {
+      "lag": 10,
+      "correlation": 0.3607909528620121
+    }
+  ]
+}

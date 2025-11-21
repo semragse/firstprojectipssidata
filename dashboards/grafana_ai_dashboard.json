@@ -18,173 +18,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 0,
   "links": [],
   "panels": [
     {
       "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "footer": {
-              "reducers": []
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 7,
-      "options": {
-        "cellHeight": "sm",
-        "showHeader": true
-      },
-      "pluginVersion": "12.3.0",
-      "targets": [
-        {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$.sample_matches[*].peak_date",
-              "type": "string"
-            },
-            {
-              "jsonPath": "$.sample_matches[*].event_date",
-              "language": "jsonpath",
-              "name": "",
-              "type": "string"
-            },
-            {
-              "jsonPath": "$.sample_matches[*].event_type",
-              "language": "jsonpath",
-              "name": "",
-              "type": "string"
-            },
-            {
-              "jsonPath": "$.sample_matches[*].score",
-              "language": "jsonpath",
-              "name": "",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
-          "refId": "A",
-          "urlPath": "/data-science/events-correlation"
-        }
-      ],
-      "title": "Événements corrélés",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 30
-              },
-              {
-                "color": "#EAB839",
-                "value": 60
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.0",
-      "targets": [
-        {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$.metrics.match_rate",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
-          "refId": "A",
-          "urlPath": "/data-science/events-correlation"
-        }
-      ],
-      "title": "Taux corrélation Data Science",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
       },
       "fieldConfig": {
         "defaults": {
@@ -210,6 +50,238 @@
             "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "dataset": "trends_db",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  EXTRACT(EPOCH FROM date) * 1000 AS \"time\",\r\n  MAX(CASE WHEN keyword = 'ChatGPT' THEN value END) AS \"ChatGPT\",\r\n  MAX(CASE WHEN keyword = 'Data Science' THEN value END) AS \"Data Science\"\r\nFROM trends_raw\r\nWHERE keyword IN ('ChatGPT', 'Data Science')\r\nGROUP BY date\r\nORDER BY date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Corrélation ChatGPT vs Data Science (NOUVEAU!)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "dataset": "",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  EXTRACT(EPOCH FROM date) * 1000 AS \"time\",\r\n  forecast AS \"AI Forecast\",\r\n  lower_bound AS \"Lower 80% Confidence\",\r\n  upper_bound AS \"Upper 80% Confidence\"\r\nFROM ai_forecast\r\nORDER BY date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Prévisions AI (30 Jours)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -258,84 +330,64 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$[*].date",
-              "type": "time"
-            },
-            {
-              "jsonPath": "$[*].fr_value",
-              "language": "jsonpath",
-              "name": "France",
-              "type": "number"
-            },
-            {
-              "jsonPath": "$[*].us_value",
-              "language": "jsonpath",
-              "name": "USA",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
+          "dataset": "",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  EXTRACT(EPOCH FROM date) * 1000 AS \"time\",\r\n  keyword,\r\n  value\r\nFROM trends_raw\r\nWHERE keyword IN ('AI', 'Machine Learning', 'Python', 'Data Science', 'ChatGPT')\r\nORDER BY date",
           "refId": "A",
-          "urlPath": "/machine-learning/fr-vs-us"
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "Machine Learning France vs USA",
+      "title": "Comparaison Tous les Keywords",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
+            "footer": {
+              "reducers": []
             },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -360,76 +412,89 @@
         "x": 12,
         "y": 8
       },
-      "id": 8,
+      "id": 2,
       "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
+        "cellHeight": "sm",
+        "showHeader": true
       },
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$[*].date",
-              "type": "time"
-            },
-            {
-              "jsonPath": "$[*].forecast",
-              "language": "jsonpath",
-              "name": "Prevision",
-              "type": "number"
-            },
-            {
-              "jsonPath": "$[*].lower80",
-              "language": "jsonpath",
-              "name": "Limite basse",
-              "type": "number"
-            },
-            {
-              "jsonPath": "$[*].upper80",
-              "language": "jsonpath",
-              "name": "Limite haute",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
+          "dataset": "trends_db",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  region AS \"Country\",\r\n  value AS \"Search Interest\",\r\n  rank AS \"Rank\"\r\nFROM geo_distribution\r\nWHERE keyword = 'Python'\r\nORDER BY rank",
           "refId": "A",
-          "urlPath": "/ai/forecast"
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "New panel",
-      "type": "timeseries"
+      "title": "Python - Top 10 Pays",
+      "type": "table"
     },
     {
       "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
           "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "footer": {
-              "reducers": []
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
             },
-            "inspect": false
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -454,41 +519,59 @@
         "x": 0,
         "y": 16
       },
-      "id": 3,
+      "id": 1,
       "options": {
-        "cellHeight": "sm",
-        "showHeader": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$[*].region",
-              "name": "Pays",
-              "type": "string"
-            },
-            {
-              "jsonPath": "$[*].value",
-              "language": "jsonpath",
-              "name": "score",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
+          "dataset": "trends_db",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  EXTRACT(EPOCH FROM date) * 1000 AS \"time\",\r\n  value AS \"ChatGPT Interest\",\r\n  rolling_28d_mean AS \"Rolling 28-Day Average\"\r\nFROM chatgpt_evolution\r\nORDER BY date",
           "refId": "A",
-          "urlPath": "/python/map"
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "Python Top Countries",
-      "type": "table"
+      "title": "Évolution ChatGPT (12 mois)",
+      "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
       },
       "fieldConfig": {
         "defaults": {
@@ -528,7 +611,7 @@
         "x": 12,
         "y": 16
       },
-      "id": 2,
+      "id": 7,
       "options": {
         "cellHeight": "sm",
         "showHeader": true
@@ -536,38 +619,42 @@
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "cacheDurationSeconds": 300,
-          "fields": [
-            {
-              "jsonPath": "$[*].date",
-              "type": "string"
-            },
-            {
-              "jsonPath": "$[*].peak_value",
-              "language": "jsonpath",
-              "name": "",
-              "type": "number"
-            },
-            {
-              "jsonPath": "$[*].z_score",
-              "language": "jsonpath",
-              "name": "",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
+          "dataset": "trends_db",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  keyword1 AS \"Keyword 1\",\r\n  keyword2 AS \"Keyword 2\",\r\n  ROUND(CAST(correlation_coefficient AS NUMERIC), 3) AS \"Correlation\",\r\n  optimal_lag_weeks AS \"Lag (weeks)\",\r\n  CASE \r\n    WHEN is_significant THEN '✅ Significant'\r\n    ELSE '⚠️ Not significant'\r\n  END AS \"Statistical Significance\",\r\n  analysis_date AS \"Analysis Date\"\r\nFROM keyword_correlations\r\nORDER BY ABS(correlation_coefficient) DESC",
           "refId": "A",
-          "urlPath": "/ai/peaks"
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "Pics AI détectés",
+      "title": "Table des Corrélations",
       "type": "table"
     },
     {
       "datasource": {
-        "type": "marcusolsson-json-datasource",
-        "uid": "df4oqv7xach6oe"
+        "type": "grafana-postgresql-datasource",
+        "uid": "af4sezldw2cjke"
       },
       "fieldConfig": {
         "defaults": {
@@ -592,7 +679,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -628,10 +715,10 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 24
       },
-      "id": 1,
+      "id": 3,
       "options": {
         "legend": {
           "calcs": [],
@@ -648,36 +735,36 @@
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "cacheDurationSeconds": 300,
+          "dataset": "trends_db",
           "datasource": {
-            "type": "marcusolsson-json-datasource",
-            "uid": "df4oqv7xach6oe"
+            "type": "grafana-postgresql-datasource",
+            "uid": "af4sezldw2cjke"
           },
-          "fields": [
-            {
-              "jsonPath": "$[*].date",
-              "type": "time"
-            },
-            {
-              "jsonPath": "$[*].value",
-              "language": "jsonpath",
-              "name": "Recherches ChatGPT",
-              "type": "number"
-            },
-            {
-              "jsonPath": "$[*].rolling_28d_mean",
-              "language": "jsonpath",
-              "name": "Moyenne 28j",
-              "type": "number"
-            }
-          ],
-          "method": "GET",
-          "queryParams": "",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  EXTRACT(EPOCH FROM date) * 1000 AS \"time\",\r\n  fr_value AS \"France\",\r\n  us_value AS \"USA\",\r\n  diff AS \"Difference (FR - US)\"\r\nFROM ml_comparison\r\nORDER BY date",
           "refId": "A",
-          "urlPath": "/chatgpt/evolution"
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "Évolution ChatGPT (12 mois)",
+      "title": "Machine Learning France vs USA",
       "type": "timeseries"
     }
   ],
@@ -688,12 +775,12 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-1y",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "AI Trends Analytics",
-  "uid": "adlp9jt",
+  "title": "Trends",
+  "uid": "ad6dzjf",
   "version": 12
 }

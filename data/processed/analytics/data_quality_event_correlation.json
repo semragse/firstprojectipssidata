@@ -1,9 +1,0 @@
-{
-  "metrics": {
-    "total_peaks": 0,
-    "matched_peaks": 0,
-    "match_rate": 0.0,
-    "avg_proximity_days": 0.0
-  },
-  "sample_matches": []
-}
